@@ -1,26 +1,66 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { useState } from 'react';
 import './App.css';
+import UserDetails from './components/UserDetails';
+import PersonalDetails from './components/PersonalDetails';
+import Confirm from './components/Confirm';
+import Success from './components/Success';
+import styled from 'styled-components';
 
-function App() {
+const Div = styled.div`
+ display: flex;
+ width: 100%;
+ height: 100vh;
+ flex-direction: column;
+`;
+
+const App = () => {
+
+  const [step, setStep] = useState(1);
+
+  const [form, setForm] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    city: '',
+    occupation: '',
+    bio: '',
+  });
+
+  const prevStep = () => {
+    let copyStep = step;
+    copyStep = copyStep - 1;
+    setStep(copyStep)
+  };
+
+  const nextStep = () => {
+    let copiaStep = step;
+    copiaStep = copiaStep + 1;
+    setStep(copiaStep)
+  };
+
+  const onKeyPress = e => {
+    if (e.key === "Enter") {
+      nextStep()
+    }
+  };
+
+  const handleChange = e => setForm({ ...form, [e.target.name]: e.target.value });
+
+  const { firstName, lastName, email, city, occupation, bio } = form;
+  const values = { firstName, lastName, email, city, occupation, bio };
+
+  const formPage = {
+    1: <UserDetails onKeyPress={onKeyPress} nextStep={nextStep} values={values} handleChange={handleChange} />,
+    2: <PersonalDetails onKeyPress={onKeyPress} prevStep={prevStep} nextStep={nextStep} values={values} handleChange={handleChange} />,
+    3: <Confirm onKeyPress={onKeyPress} prevStep={prevStep} nextStep={nextStep} values={values} />,
+    4: <Success />
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    <Div>
+      {formPage[step]}
+    </Div>
+  )
 }
 
 export default App;
